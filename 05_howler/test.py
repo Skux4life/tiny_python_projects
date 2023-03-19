@@ -9,7 +9,7 @@ from subprocess import getstatusoutput, getoutput
 
 prg = './howler.py'
 
-
+ 
 # --------------------------------------------------
 def random_string():
     """generate a random string"""
