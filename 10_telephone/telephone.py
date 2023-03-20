@@ -6,6 +6,9 @@ Purpose: telephone
 """
 
 import argparse
+import os
+import random
+import string
 
 
 # --------------------------------------------------
@@ -16,37 +19,33 @@ def get_args():
         description='telephone',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('positional',
+    parser.add_argument('text',
                         metavar='str',
-                        help='A positional argument')
+                        help='Input text or file')
 
-    parser.add_argument('-a',
-                        '--arg',
-                        help='A named string argument',
-                        metavar='str',
-                        type=str,
-                        default='')
-
-    parser.add_argument('-i',
-                        '--int',
-                        help='A named integer argument',
-                        metavar='int',
+    parser.add_argument('-s',
+                        '--seed',
+                        help='Random value seed',
+                        metavar='seed',
                         type=int,
-                        default=0)
-
-    parser.add_argument('-f',
-                        '--file',
-                        help='A readable file',
-                        metavar='FILE',
-                        type=argparse.FileType('rt'),
                         default=None)
 
-    parser.add_argument('-o',
-                        '--on',
-                        help='A boolean flag',
-                        action='store_true')
+    parser.add_argument('-m',
+                        '--mutations',
+                        help='Percentage mutations',
+                        metavar='mutations',
+                        type=float,
+                        default=0.1)
 
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    if os.path.isfile(args.text):
+        args.text = open(args.text).read().rstrip()
+
+    if not 0 <= args.mutations < 1:
+        parser.error(f'--mutations "{args.mutations}" must be between 0 and 1')
+
+    return args
 
 
 # --------------------------------------------------
@@ -54,17 +53,21 @@ def main():
     """Make a jazz noise here"""
 
     args = get_args()
-    str_arg = args.arg
-    int_arg = args.int
-    file_arg = args.file
-    flag_arg = args.on
-    pos_arg = args.positional
+    random.seed(args.seed)
+    text = args.text
+    num_mutations = round(len(text) * args.mutations)
+    substitution = ''.join(sorted(string.ascii_letters + string.punctuation))
+    characters = list(text)
 
-    print(f'str_arg = "{str_arg}"')
-    print(f'int_arg = "{int_arg}"')
-    print('file_arg = "{}"'.format(file_arg.name if file_arg else ''))
-    print(f'flag_arg = "{flag_arg}"')
-    print(f'positional = "{pos_arg}"')
+    indexes = random.sample(range(len(text)), num_mutations)
+
+    for i in indexes:
+        characters[i] = random.choice(substitution.replace(characters[i], ''))
+
+    result = ''.join(characters)
+
+    print(f'You said: "{text}"')
+    print(f'I heard : "{result}"')
 
 
 # --------------------------------------------------
