@@ -45,7 +45,7 @@ def test_bad_num():
     for n in [random.choice(r) for r in (range(-10, -1), range(13, 20))]:
         rv, out = getstatusoutput(f'{prg} -n {n}')
         assert rv != 0
-        assert re.search(f'--num "{n}" must be between 1 and 12', out)
+        assert re.search(f'--number "{n}" must be an integer between 1 and 12', out)
 
 
 # --------------------------------------------------
